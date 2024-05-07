@@ -31,10 +31,10 @@ class Bird:
     ゲームキャラクター（こうかとん）に関するクラス
     """
     delta = {  # 押下キーと移動量の辞書
-        pg.K_UP: (0, -5),
-        pg.K_DOWN: (0, +5),
-        pg.K_LEFT: (-5, 0),
-        pg.K_RIGHT: (+5, 0),
+        pg.K_w: (0, -5),
+        pg.K_s: (0, +5),
+        pg.K_a: (-5, 0),
+        pg.K_d: (+5, 0),
     }
     img0 = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
     img = pg.transform.flip(img0, True, False)  # デフォルトのこうかとん（右向き）
