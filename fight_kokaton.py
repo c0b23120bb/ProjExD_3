@@ -111,6 +111,7 @@ class Bomb:
             self.vx *= -1
         if not tate:
             self.vy *= -1
+            
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
