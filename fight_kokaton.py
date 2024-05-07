@@ -58,7 +58,7 @@ class Bird:
         self.rct: pg.Rect = self.img.get_rect()
         self.rct.center = xy
 
-        self.dire = (+5,0)
+        self.dire = (+5,0) #こうかとんの向きを表すタプル
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -85,7 +85,7 @@ class Bird:
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
             self.img = __class__.imgs[tuple(sum_mv)]
-            self.dire = sum_mv
+            self.dire = sum_mv #移動していたら更新
 
         screen.blit(self.img, self.rct)
 
@@ -127,15 +127,18 @@ class Beam:
     """
     def __init__(self, bird: Bird):
 
-        self.vx, self.vy = bird.dire
+        self.vx, self.vy = bird.dire #クラスBirdのdireにアクセスし、こうかとんの向きを取得
 
-        self.ang = math.atan2(-self.vy, self.vx)
+        self.ang = math.atan2(-self.vy, self.vx) #極座標の角度に変換
         
         self.img = pg.transform.rotozoom(pg.image.load("fig/beam.png"),math.degrees(self.ang) , 2.0)
+        #ビームの画像を弧度法から度数法に変換し、回転し、拡大する
+
         #self.img = pg.transform.rotozoom(self.img,math.degrees(self.ang), 1.0)
+
         self.rct: pg.Rect = self.img.get_rect()
-        self.rct.centerx = bird.rct.centerx + self.vx * 20  
-        self.rct.centery = bird.rct.centery + self.vy * 20
+        self.rct.centerx = bird.rct.centerx + self.vx * 20  #横座標を向きに合わせて中心から調整
+        self.rct.centery = bird.rct.centery + self.vy * 20  #縦座標を向きに合わせて中心から調整
 
         
     def update(self, screen: pg.Surface):
@@ -152,18 +155,44 @@ class Score:
     スコアに関するクラス
     """
     def __init__(self):
-        self.fonto = pg.font.SysFont("hgp創英角ポップ体", 30)
-        self.count = 0
-        self.img = self.fonto.render("score", 0,(0, 0, 255))
+        """
+        文字表示に関するイニシャライズ
+        """
+        self.fonto = pg.font.SysFont("hgp創英角ポップ体", 30) #size30のフォント作成
+        self.count = 0 #scoreのカウントを初期化
+        self.img = self.fonto.render("score:", 0,(0, 0, 255)) #scoreを青色で表示する 
         self.rct = self.img.get_rect()
-        self.rct.center = (100, HEIGHT - 50)
+        self.rct.center = (100, HEIGHT - 50) #横100,画面下から50で表示
 
     def update(self,screen: pg.Surface):
+        """
+        現在のスコアに更新して表示させる
+        """
         self.img = self.fonto.render("score:"+str(self.count), 0,(0, 0, 255))
 
         screen.blit(self.img,self.rct)
 
         
+
+class explosion:
+    """
+    爆発に関するエフェクト
+    """
+    def __init__(self):
+        self.img = pg.transform.rotozoom(pg.image.load("fig/explosion.gif"), 0, 2.0)
+        self.rct: pg.Rect = self.img.get_rect()
+        self.vx, self.vy = +5, 0
+    
+    def update(self, screen: pg.Surface):
+        """
+        爆発の位置を更新して表示させる
+        引数 screen：画面Surface
+        """
+        if check_bound(self.rct) == (True, True):
+            self.rct.move_ip(self.vx, self.vy)
+            screen.blit(self.img, self.rct)
+
+
 
 
 
@@ -215,7 +244,7 @@ def main():
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)
-                    score.count += 1
+                    score.count += 1 #スコアの値を1増やす
                     pg.display.update()
 
         bombs = [bomb for bomb in bombs if bomb is not None]
