@@ -136,6 +136,26 @@ class Beam:
             self.rct.move_ip(self.vx, self.vy)
             screen.blit(self.img, self.rct)
 
+class explosion:
+    """
+    爆発に関するエフェクト
+    """
+    def __init__(self, bird):
+        self.img = pg.transform.rotozoom(pg.image.load("fig/explosion.gif"), 0, 2.0)
+        self.rct: pg.Rect = self.img.get_rect()
+        self.rct.left = bird.rct.right
+        self.rct.centery = bird.rct.centery
+        self.vx, self.vy = +5, 0
+    
+    def update(self, screen: pg.Surface):
+        """
+        爆弾を速度ベクトルself.vx, self.vyに基づき移動させる
+        引数 screen：画面Surface
+        """
+        if check_bound(self.rct) == (True, True):
+            self.rct.move_ip(self.vx, self.vy)
+            screen.blit(self.img, self.rct)
+
 
 
 def main():
@@ -148,6 +168,7 @@ def main():
     beam = None
     clock = pg.time.Clock()
     tmr = 0
+    exp = []
 
     while True:
         for event in pg.event.get():
@@ -183,6 +204,7 @@ def main():
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
                     beam = None
                     bombs[i] = None
+
                     bird.change_img(6, screen)
                     pg.display.update()
         bombs = [bomb for bomb in bombs if bomb is not None]
